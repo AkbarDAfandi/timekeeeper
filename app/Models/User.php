@@ -9,10 +9,16 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
+use Filament\Models\Contracts\HasTenants;
 
-#[Fillable(['name', 'email', 'password'])]
+
+#[Fillable(['name', 'email', 'password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser, HasTenants
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -28,5 +34,28 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return in_array($this->role, ['superadmin', 'admin', 'operator']);
+    }
+
+    public function getTenants(Panel $panel): array|Collection
+    {
+        if ($this->role === 'superadmin') {
+            return Tenant::all();
+        }
+
+        return Tenant::where('id', $this->tenant_id)->get();
+    }
+
+    public function canAccessTenant(Model $tenant): bool 
+    {
+        if ($this->role === superadmin) {
+            return true;
+        }
+
+        return $this->tenant_id === $tenant->id;
     }
 }
