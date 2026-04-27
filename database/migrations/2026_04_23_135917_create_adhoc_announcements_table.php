@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('adhoc_announcements', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->foreignId('triggered_by')->constrained('users');
             $table->string('message');
             $table->timestamp('played_at');

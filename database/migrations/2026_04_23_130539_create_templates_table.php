@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('templates', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->string('name');
             $table->string('content_id');
             $table->string('content_en');
             $table->boolean('is_static');
-            $table->string('preset_audio_path');
+            $table->string('preset_audio_path')->nullable();
             $table->timestamps();
         });
     }
