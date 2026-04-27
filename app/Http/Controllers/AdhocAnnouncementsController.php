@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\adhoc_announcements;
+use App\Models\Adhoc_announcements;
 use Illuminate\Http\Request;
 
 class AdhocAnnouncementsController extends Controller
@@ -34,7 +34,7 @@ class AdhocAnnouncementsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(adhoc_announcements $adhoc_announcements)
+    public function show(Adhoc_announcements $adhoc_announcements)
     {
         //
     }
@@ -42,7 +42,7 @@ class AdhocAnnouncementsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(adhoc_announcements $adhoc_announcements)
+    public function edit(Adhoc_announcements $adhoc_announcements)
     {
         //
     }
@@ -50,7 +50,7 @@ class AdhocAnnouncementsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, adhoc_announcements $adhoc_announcements)
+    public function update(Request $request, Adhoc_announcements $adhoc_announcements)
     {
         //
     }
@@ -58,7 +58,7 @@ class AdhocAnnouncementsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(adhoc_announcements $adhoc_announcements)
+    public function destroy(Adhoc_announcements $adhoc_announcements)
     {
         //
     }

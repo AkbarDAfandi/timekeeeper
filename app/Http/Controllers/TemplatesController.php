@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\templates;
+use App\Models\Templates;
 use Illuminate\Http\Request;
 
 class TemplatesController extends Controller
@@ -34,7 +34,7 @@ class TemplatesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(templates $templates)
+    public function show(Templates $templates)
     {
         //
     }
@@ -42,7 +42,7 @@ class TemplatesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(templates $templates)
+    public function edit(Templates $templates)
     {
         //
     }
@@ -50,7 +50,7 @@ class TemplatesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, templates $templates)
+    public function update(Request $request, Templates $templates)
     {
         //
     }
@@ -58,7 +58,7 @@ class TemplatesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(templates $templates)
+    public function destroy(Templates $templates)
     {
         //
     }

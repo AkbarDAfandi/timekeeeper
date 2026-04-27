@@ -5,15 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class templates extends Model
+class Global_presets extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'name',
-        'content_id',
-        'content_en',
-        'is_static',
-        'preset_audio_path'
+        'category',
+        'audio_path'
     ];
 }

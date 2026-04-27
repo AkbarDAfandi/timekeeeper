@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class adhoc_announcements extends Model
+class Adhoc_announcements extends Model
 {
     use HasFactory;
 

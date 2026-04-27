@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\global_presets;
+use App\Models\Global_presets;
 use Illuminate\Http\Request;
 
 class GlobalPresetsController extends Controller
@@ -34,7 +34,7 @@ class GlobalPresetsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(global_presets $global_presets)
+    public function show(Global_presets $global_presets)
     {
         //
     }
@@ -42,7 +42,7 @@ class GlobalPresetsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(global_presets $global_presets)
+    public function edit(Global_presets $global_presets)
     {
         //
     }
@@ -50,7 +50,7 @@ class GlobalPresetsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, global_presets $global_presets)
+    public function update(Request $request, Global_presets $global_presets)
     {
         //
     }
@@ -58,7 +58,7 @@ class GlobalPresetsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(global_presets $global_presets)
+    public function destroy(Global_presets $global_presets)
     {
         //
     }

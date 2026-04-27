@@ -16,12 +16,25 @@ use Filament\Panel;
 use Filament\Models\Contracts\HasTenants;
 
 
-#[Fillable(['name', 'email', 'password', 'role'])]
-#[Hidden(['password', 'remember_token'])]
+// #[Fillable(['name', 'email', 'password', 'role', 'tenant_id'])]
+// #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements FilamentUser, HasTenants
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role',
+        'tenant_id',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token'
+    ];
 
     /**
      * Get the attributes that should be cast.
@@ -50,9 +63,9 @@ class User extends Authenticatable implements FilamentUser, HasTenants
         return Tenant::where('id', $this->tenant_id)->get();
     }
 
-    public function canAccessTenant(Model $tenant): bool 
+    public function canAccessTenant(Model $tenant): bool
     {
-        if ($this->role === superadmin) {
+        if ($this->role === 'superadmin') {
             return true;
         }
 
