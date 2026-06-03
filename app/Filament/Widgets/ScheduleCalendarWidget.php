@@ -2,14 +2,19 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\Global_presets;
 use App\Models\Schedule;
+use App\Models\Templates;
+use Carbon\Carbon;
+use Filament\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
-use Filament\Actions\Action;
-use Carbon\Carbon;
 use Saade\FilamentFullCalendar\Actions\CreateAction;
 use Saade\FilamentFullCalendar\Actions\DeleteAction;
 use Saade\FilamentFullCalendar\Actions\EditAction;
@@ -49,22 +54,33 @@ class ScheduleCalendarWidget extends FullCalendarWidget
             'height' => 'auto',
             'slotDuration' => '00:30:00',
             'slotLabelInterval' => '00:30:00',
+            'allDaySlot' => false,
         ];
     }
 
     public function onEventDrop(array $event, array $oldEvent, array $relatedEvents, array $delta, ?array $oldResource = null, ?array $newResource = null): bool
     {
         $id = (string) explode('-', $event['id'])[0];
+        $schedule = Schedule::find($id);
 
-        // Override Livewire array mutation blindness
+        if (!$schedule) {
+            return false;
+        }
+
+        $newStartTime = Carbon::parse($event['start'])->format('H:i:s');
+        $newEndTime = Carbon::parse($event['end'])->format('H:i:s');
+
         $updates = $this->pendingUpdates;
-        $updates[$id] = [
-            'start_time' => \Carbon\Carbon::parse($event['start'])->format('H:i:s'),
-            'end_time' => \Carbon\Carbon::parse($event['end'])->format('H:i:s'),
-        ];
-        $this->pendingUpdates = $updates;
+        if ($schedule->start_time === $newStartTime && $schedule->end_time === $newEndTime) {
+            unset($updates[$id]);
+        } else {
+            $updates[$id] = [
+                'start_time' => $newStartTime,
+                'end_time' => $newEndTime,
+            ];
+        }
 
-        // Force UI to sync with new Livewire state
+        $this->pendingUpdates = $updates;
         $this->dispatch('filament-fullcalendar--refresh');
 
         return true;
@@ -75,6 +91,15 @@ class ScheduleCalendarWidget extends FullCalendarWidget
         // Nullified. Automated calendar syncing destroyed.
     }
 
+    public function onEventClick(array $info): void
+    {
+        $rawId = $info['event']['id'] ?? $info['id'];
+        $id = (string) explode('-', $rawId)[0];
+
+        $this->record = Schedule::findOrFail($id);
+
+        $this->mountAction('view');
+    }
 
     protected function headerActions(): array
     {
@@ -85,7 +110,7 @@ class ScheduleCalendarWidget extends FullCalendarWidget
                 ->visible(fn () => count($this->pendingUpdates) > 0)
                 ->action(function () {
                     foreach ($this->pendingUpdates as $id => $data) {
-                        \App\Models\Schedule::where('id', $id)->update($data);
+                        Schedule::where('id', $id)->update($data);
                     }
                     $this->pendingUpdates = [];
                     $this->dispatch('filament-fullcalendar--refresh');
@@ -102,8 +127,8 @@ class ScheduleCalendarWidget extends FullCalendarWidget
                     $end = isset($arguments['end']) ? Carbon::parse($arguments['end']) : null;
 
                     $form->fill([
-                        'start_time' => $start ? $start->format('H:i:s') : null,
-                        'end_time' => $end ? $end->format('H:i:s') : null,
+                        'start_time' => $start ? $start->format('H:i') : null,
+                        'end_time' => $end ? $end->format('H:i') : null,
                         'days_of_week' => $start ? [(string) $start->dayOfWeek] : [],
                     ]);
                 })
@@ -121,6 +146,7 @@ class ScheduleCalendarWidget extends FullCalendarWidget
     protected function modalActions(): array
     {
         return [
+            // ViewAction::make()->schema($this->getScheduleFormSchema()),
             EditAction::make()->schema($this->getScheduleFormSchema()),
             DeleteAction::make(),
         ];
@@ -157,8 +183,46 @@ class ScheduleCalendarWidget extends FullCalendarWidget
                 ])
                 ->columns(2)
                 ->required()
-                ->default([])
-        ];
+                ->default([]),
+
+            Select::make('audio_source')
+                ->label('Audio Source Selection')
+                ->options([
+                    'global' => 'Global Preset',
+                    'template' => 'Tenant Template',
+                    'custom' => 'Custom Upload',
+                ])
+                ->live()
+                ->dehydrated(false) // Prevents Filament from attempting to save this virtual column
+                ->afterStateUpdated(function (Set $set) {
+                    // Purge dormant states on switch
+                    $set('global_preset_id', null);
+                    $set('tenant_template_id', null);
+                    $set('cached_audio_path', null);
+                }),
+
+            Select::make('global_preset_id')
+                ->label('Select Global Preset')
+                ->options(Global_presets::pluck('name', 'id'))
+                ->searchable()
+                ->visible(fn (Get $get) => $get('audio_source') === 'global')
+                ->required(fn (Get $get) => $get('audio_source') === 'global'),
+
+            Select::make('tenant_template_id')
+                ->label('Select Tenant Template')
+                ->options(Templates::where('tenant_id', \Filament\Facades\Filament::getTenant()->id)->pluck('name', 'id'))
+                ->searchable()
+                ->visible(fn (Get $get) => $get('audio_source') === 'template')
+                ->required(fn (Get $get) => $get('audio_source') === 'template'),
+
+            FileUpload::make('cached_audio_path')
+                ->label('Custom Audio Upload')
+                ->disk('public')
+                ->directory('tenant-audio')
+                    ->maxSize(15360)
+                ->visible(fn (Get $get) => $get('audio_source') === 'custom')
+                ->required(fn (Get $get) => $get('audio_source') === 'custom'),
+                ];
     }
 
     public function fetchEvents(array $fetchInfo): array

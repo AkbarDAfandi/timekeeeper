@@ -12,8 +12,6 @@ class DashboardScheduleCalendar extends FullCalendarWidget
     protected static ?int $sort = 1;
     protected int | string | array $columnSpan = 'full';
 
-
-
     public function config(): array
     {
         return [
@@ -41,12 +39,18 @@ class DashboardScheduleCalendar extends FullCalendarWidget
             'slotMaxTime' => '17:00:00',
             'expandRows' => true,
             'height' => 'auto',
+            'allDaySlot' => false,
         ];
     }
 
     protected function headerActions(): array
     {
         return [];
+    }
+
+    public function onEventClick(array $info): void
+    {
+        // Nullified. Click interactions destroyed.
     }
 
     public function fetchEvents(array $fetchInfo): array

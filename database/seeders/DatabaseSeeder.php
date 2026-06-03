@@ -13,6 +13,10 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->call([
+            GlobalPresetSeeder::class,
+        ]);
+
         $tenant = Tenant::create([
             'name' => 'SMK Negeri 1 Lumajang',
         ]);
@@ -74,7 +78,7 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
             'is_override' => false,
             'global_preset_id' => $globalPreset->id,
-            'tenant_template_id' => $template->id,
+            'tenant_template_id' => null,
             'custom_text_addition' => null,
             'cached_audio_path' => null,
         ]);

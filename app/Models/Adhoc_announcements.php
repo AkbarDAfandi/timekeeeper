@@ -10,7 +10,8 @@ class Adhoc_announcements extends Model
     use HasFactory;
 
     protected $fillable = [
-        'tiggered_by',
+        'tenant_id',
+        'triggered_by',
         'message',
         'played_at'
     ];

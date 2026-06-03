@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\PlayerAuthController;
+use App\Http\Controllers\PlayerController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -8,4 +10,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/source-login', [PlayerAuthController::class, 'showLoginForm'])->name('player.login');
 Route::post('/source-login', [PlayerAuthController::class, 'authenticate']);
-Route::get('/source-display', [PlayerDisplayController::class, 'index'])->name('player.display')->middleware('auth');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/source-display', [PlayerController::class, 'index'])->name('player.display');
+    Route::get('/source-payload', [PlayerController::class, 'payload'])->name('player.payload');
+});

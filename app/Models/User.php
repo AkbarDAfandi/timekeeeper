@@ -57,7 +57,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     public function getTenants(Panel $panel): array|Collection
     {
         if ($this->role === 'superadmin') {
-            return Tenant::all();
+            return collect();
         }
 
         return Tenant::where('id', $this->tenant_id)->get();

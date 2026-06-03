@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Carbon\Carbon;
+use App\Events\SchedulesUpdated;
 
 class Schedule extends Model
 {
@@ -47,10 +48,32 @@ class Schedule extends Model
                 $schedule->created_by = auth()->id();
             }
         });
+
+        static::saved(function ($schedule) {
+            if (!empty($schedule->tenant_id)) {
+                event(new SchedulesUpdated($schedule->tenant_id));
+            }
+        });
+
+        static::deleted(function ($schedule) {
+            if (!empty($schedule->tenant_id)) {
+                event(new SchedulesUpdated($schedule->tenant_id));
+            }
+        });
     }
 
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);
+    }
+
+    public function globalPreset()
+    {
+        return $this->belongsTo(Global_presets::class);
+    }
+
+    public function tenantTemplate()
+    {
+        return $this->belongsTo(Templates::class, 'tenant_template_id');
     }
 }

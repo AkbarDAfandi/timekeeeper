@@ -10,6 +10,7 @@ class Templates extends Model
     use HasFactory;
 
     protected $fillable = [
+        'tenant_id',
         'name',
         'content_id',
         'content_en',
