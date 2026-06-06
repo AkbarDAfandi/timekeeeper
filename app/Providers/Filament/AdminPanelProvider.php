@@ -73,7 +73,7 @@ class AdminPanelProvider extends PanelProvider
     {
         FilamentView::registerRenderHook(
             PanelsRenderHook::HEAD_END,
-            fn (): string => Blade::render('<style>.fc-timegrid-slot { height: 3em !important; }</style>') // Base default is 1.5em. Adjust 3em to scale.
+            fn (): string => Blade::render('<style>.fc-timegrid-slot { height: 3em !important; }</style>')
         );
     }
 }

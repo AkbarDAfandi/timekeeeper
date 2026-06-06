@@ -17,4 +17,9 @@ class Templates extends Model
         'is_static',
         'preset_audio_path'
     ];
+
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class);
+    }
 }

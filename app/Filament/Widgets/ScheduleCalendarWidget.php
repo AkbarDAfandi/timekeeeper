@@ -17,12 +17,12 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Saade\FilamentFullCalendar\Actions\CreateAction;
 use Saade\FilamentFullCalendar\Actions\DeleteAction;
-use Saade\FilamentFullCalendar\Actions\EditAction;
 use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
 
 class ScheduleCalendarWidget extends FullCalendarWidget
 {
     protected static bool $isDiscovered = false;
+    protected string $view = 'filament.widgets.schedule-calendar-widget';
 
     public array $pendingUpdates = [];
 
@@ -98,7 +98,7 @@ class ScheduleCalendarWidget extends FullCalendarWidget
 
         $this->record = Schedule::findOrFail($id);
 
-        $this->mountAction('view');
+        $this->mountAction('edit');
     }
 
     protected function headerActions(): array
@@ -146,8 +146,26 @@ class ScheduleCalendarWidget extends FullCalendarWidget
     protected function modalActions(): array
     {
         return [
-            // ViewAction::make()->schema($this->getScheduleFormSchema()),
-            EditAction::make()->schema($this->getScheduleFormSchema()),
+            Action::make('edit')
+                ->label('Edit Schedule')
+                ->icon('heroicon-o-pencil')
+                ->modalHeading('Edit Schedule')
+                ->form(fn (Schema $form) => $form->schema($this->getScheduleFormSchema()))
+                ->fillForm(function () {
+                    $data = $this->record?->toArray() ?? [];
+                    $data['audio_source'] = match (true) {
+                        !empty($data['cached_audio_path']) => 'custom',
+                        !empty($data['global_preset_id']) => 'global',
+                        !empty($data['tenant_template_id']) => 'template',
+                        default => null,
+                    };
+                    return $data;
+                })
+                ->action(function (array $data): void {
+                    $data['days_of_week'] = $data['days_of_week'] ?? [];
+                    $this->record->update($data);
+                    $this->dispatch('filament-fullcalendar--refresh');
+                }),
             DeleteAction::make(),
         ];
     }
@@ -236,7 +254,7 @@ class ScheduleCalendarWidget extends FullCalendarWidget
             $currentDayOfWeek = $date->dayOfWeek;
 
             foreach ($schedules as $schedule) {
-                $validDays = $schedule->days_of_week ?? [];
+                $validDays = is_array($schedule->days_of_week) ? $schedule->days_of_week : json_decode($schedule->days_of_week, true) ?? [];
 
                 if (in_array($currentDayOfWeek, $validDays)) {
                     $key = (string) $schedule->id;
