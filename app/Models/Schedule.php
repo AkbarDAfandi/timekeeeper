@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Carbon\Carbon;
 use App\Events\SchedulesUpdated;
 
 class Schedule extends Model
@@ -17,6 +16,7 @@ class Schedule extends Model
         'tenant_id',
         'created_by',
         'title',
+        'category',
         'start_time',
         'end_time',
         'days_of_week',
@@ -50,14 +50,20 @@ class Schedule extends Model
         });
 
         static::saved(function ($schedule) {
-            if (!empty($schedule->tenant_id)) {
-                event(new SchedulesUpdated($schedule->tenant_id));
+            if (!empty($schedule->tenant_id) && !app()->runningInConsole()) {
+                try {
+                    event(new SchedulesUpdated($schedule->tenant_id));
+                } catch (\Exception $e) {
+                }
             }
         });
 
         static::deleted(function ($schedule) {
-            if (!empty($schedule->tenant_id)) {
-                event(new SchedulesUpdated($schedule->tenant_id));
+            if (!empty($schedule->tenant_id) && !app()->runningInConsole()) {
+                try {
+                    event(new SchedulesUpdated($schedule->tenant_id));
+                } catch (\Exception $e) {
+                }
             }
         });
     }
@@ -75,5 +81,15 @@ class Schedule extends Model
     public function tenantTemplate()
     {
         return $this->belongsTo(Templates::class, 'tenant_template_id');
+    }
+
+    public static function categoryColorMap(?int $tenantId = null): array
+    {
+        return ScheduleCategory::colorMap($tenantId);
+    }
+
+    public static function categoryOptions(?int $tenantId = null): array
+    {
+        return ScheduleCategory::optionsForTenant($tenantId);
     }
 }

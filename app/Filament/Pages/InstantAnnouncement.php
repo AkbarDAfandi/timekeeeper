@@ -16,6 +16,7 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Storage;
+use UnitEnum;
 
 class InstantAnnouncement extends Page implements HasForms
 {
@@ -27,6 +28,7 @@ class InstantAnnouncement extends Page implements HasForms
     protected static ?string $slug = 'instant-announcement';
     protected string $view = 'filament.pages.instant-announcement';
     protected static ?int $navigationSort = 10;
+    protected static UnitEnum|string|null $navigationGroup = 'Announcements';
 
     public ?array $data = [];
 
@@ -105,7 +107,10 @@ class InstantAnnouncement extends Page implements HasForms
             'played_at' => now(),
         ]);
 
-        event(new AdhocAudioDispatched($tenantId, $audioUrl));
+        try {
+            event(new AdhocAudioDispatched($tenantId, $audioUrl));
+        } catch (\Exception $e) {
+        }
 
         Notification::make()
             ->title('Announcement broadcasted successfully')

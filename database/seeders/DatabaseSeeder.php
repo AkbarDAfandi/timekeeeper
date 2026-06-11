@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             GlobalPresetSeeder::class,
+            ScheduleCategorySeeder::class,
         ]);
 
         $tenant = Tenant::create([
@@ -72,6 +73,7 @@ class DatabaseSeeder extends Seeder
             'tenant_id' => $tenant->id,
             'created_by' => $admin->id,
             'title' => 'Jam Ke-1',
+            'category' => 'class',
             'start_time' => '07:00:00',
             'end_time' => '07:40:00',
             'days_of_week' => json_encode([1, 2, 3, 4, 5]),

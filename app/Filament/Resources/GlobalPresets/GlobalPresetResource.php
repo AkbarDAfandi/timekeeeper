@@ -15,6 +15,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class GlobalPresetResource extends Resource
 {
@@ -29,6 +30,7 @@ class GlobalPresetResource extends Resource
     protected static ?string $pluralModelLabel = 'Global Presets';
 
     protected static ?int $navigationSort = 20;
+    protected static UnitEnum|string|null $navigationGroup = 'Announcements';
 
     protected static bool $isScopedToTenant = false;
 

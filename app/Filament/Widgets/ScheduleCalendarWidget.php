@@ -16,7 +16,6 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Saade\FilamentFullCalendar\Actions\CreateAction;
-use Saade\FilamentFullCalendar\Actions\DeleteAction;
 use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
 
 class ScheduleCalendarWidget extends FullCalendarWidget
@@ -165,8 +164,17 @@ class ScheduleCalendarWidget extends FullCalendarWidget
                     $data['days_of_week'] = $data['days_of_week'] ?? [];
                     $this->record->update($data);
                     $this->dispatch('filament-fullcalendar--refresh');
-                }),
-            DeleteAction::make(),
+                })
+                ->extraModalFooterActions([
+                    Action::make('delete_schedule')
+                        ->label('Delete')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->action(function () {
+                            $this->record->delete();
+                            $this->dispatch('filament-fullcalendar--refresh');
+                        }),
+                ]),
         ];
     }
 
@@ -174,6 +182,14 @@ class ScheduleCalendarWidget extends FullCalendarWidget
     protected function getScheduleFormSchema(): array
     {
         return [
+            Select::make('category')
+                ->options(fn () => Schedule::categoryOptions(
+                    \Filament\Facades\Filament::getTenant()?->id
+                ))
+                ->required()
+                ->native(false)
+                ->default('class'),
+
             TextInput::make('title')
                 ->required(),
 
@@ -243,6 +259,19 @@ class ScheduleCalendarWidget extends FullCalendarWidget
                 ];
     }
 
+    protected static function getCategoryColor(string $slug): ?string
+    {
+        $tenantId = \Filament\Facades\Filament::getTenant()?->id;
+        return \App\Models\ScheduleCategory::where('slug', $slug)
+            ->where(function ($q) use ($tenantId) {
+                $q->whereNull('tenant_id');
+                if ($tenantId) {
+                    $q->orWhere('tenant_id', $tenantId);
+                }
+            })
+            ->value('color');
+    }
+
     public function fetchEvents(array $fetchInfo): array
     {
         $schedules = Schedule::where('is_active', true)->get();
@@ -267,6 +296,8 @@ class ScheduleCalendarWidget extends FullCalendarWidget
                         'title' => $schedule->title,
                         'start' => $date->copy()->setTimeFromTimeString($startTime)->toIso8601String(),
                         'end' => $date->copy()->setTimeFromTimeString($endTime)->toIso8601String(),
+                        'backgroundColor' => self::getCategoryColor($schedule->category) ?? '#6B7280',
+                        'borderColor' => self::getCategoryColor($schedule->category) ?? '#6B7280',
                     ];
                 }
             }

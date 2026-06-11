@@ -84,6 +84,13 @@ class DashboardScheduleCalendar extends FullCalendarWidget
     protected function getScheduleFormSchema(): array
     {
         return [
+            Select::make('category')
+                ->label('Category')
+                ->options(fn () => Schedule::categoryOptions(
+                    \Filament\Facades\Filament::getTenant()?->id
+                ))
+                ->native(false),
+
             TextInput::make('title')
                 ->label('Title')
                 ->required(),
@@ -128,6 +135,19 @@ class DashboardScheduleCalendar extends FullCalendarWidget
         ];
     }
 
+    protected static function getCategoryColor(string $slug): ?string
+    {
+        $tenantId = \Filament\Facades\Filament::getTenant()?->id;
+        return \App\Models\ScheduleCategory::where('slug', $slug)
+            ->where(function ($q) use ($tenantId) {
+                $q->whereNull('tenant_id');
+                if ($tenantId) {
+                    $q->orWhere('tenant_id', $tenantId);
+                }
+            })
+            ->value('color');
+    }
+
     public function fetchEvents(array $fetchInfo): array
     {
         $schedules = Schedule::where('is_active', true)->get();
@@ -146,6 +166,8 @@ class DashboardScheduleCalendar extends FullCalendarWidget
                         'title' => $schedule->title,
                         'start' => $date->copy()->setTimeFromTimeString($schedule->start_time)->toIso8601String(),
                         'end' => $date->copy()->setTimeFromTimeString($schedule->end_time)->toIso8601String(),
+                        'backgroundColor' => self::getCategoryColor($schedule->category) ?? '#6B7280',
+                        'borderColor' => self::getCategoryColor($schedule->category) ?? '#6B7280',
                     ];
                 }
             }

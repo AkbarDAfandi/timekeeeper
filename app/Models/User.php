@@ -29,6 +29,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
         'password',
         'role',
         'tenant_id',
+        'created_by',
     ];
 
     protected $hidden = [
@@ -70,5 +71,25 @@ class User extends Authenticatable implements FilamentUser, HasTenants
         }
 
         return $this->tenant_id === $tenant->id;
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function createdUsers()
+    {
+        return $this->hasMany(User::class, 'created_by');
+    }
+
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
+    public function isPrimaryAdmin(): bool
+    {
+        return $this->role === 'admin' && $this->created_by === null;
     }
 }

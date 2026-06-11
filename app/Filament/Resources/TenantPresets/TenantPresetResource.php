@@ -17,6 +17,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class TenantPresetResource extends Resource
 {
@@ -30,7 +31,8 @@ class TenantPresetResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Tenant Presets';
 
-    protected static ?int $navigationSort = 21;
+    protected static ?int $navigationSort = 30;
+    protected static UnitEnum|string|null $navigationGroup = 'Config';
 
     public static function canAccess(): bool
     {
