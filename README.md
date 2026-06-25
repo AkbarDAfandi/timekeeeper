@@ -1,58 +1,162 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# School-Timekeeper: Sistem Bel & Pengumuman Otomatis Sekolah
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**School-Timekeeper** adalah aplikasi *web-based* untuk mengelola jadwal bel sekolah, pengumuman otomatis, dan siaran audio *real-time* melalui *player nodes*. Proyek ini dikembangkan sebagai portofolio *Full-Stack Development* yang mendemonstrasikan implementasi arsitektur *multi-tenant*, *real-time broadcasting*, dan *role-based access control*.
 
-## About Laravel
+![Project Status](https://img.shields.io/badge/Status-PoC%20%2F%20MVP-orange)
+![Tech Stack](https://img.shields.io/badge/Backend-PHP%20%2F%20Laravel-red)
+![Filament](https://img.shields.io/badge/Admin-Filament%205-purple)
+![Real-time](https://img.shields.io/badge/Real--time-Laravel%20Reverb-blue)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## ⚠️ Disclaimer
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Proyek ini adalah **Proof of Concept (PoC)** dan **Base MVP** — dikembangkan untuk mendemonstrasikan arsitektur dan fitur inti. Beberapa fitur mungkin belum sepenuhnya stabil atau masih dalam penyempurnaan.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+> **Rencana Pengembangan:** Proyek ini direncanakan untuk dikembangkan lebih lanjut menjadi layanan **SaaS berbayar** dengan fitur lengkap, multi-tenant terkelola, dan dukungan production-grade.
 
-## Learning Laravel
+> **Catatan Pengembangan:**
+> - Fitur *multi-database tenant* sudah terimplementasi namun mungkin memerlukan penyesuaian untuk production.
+> - *Broadcasting* event memerlukan Laravel Reverb yang sedang berjalan dan terkonfigurasi dengan benar.
+> - Audio playback pada *player node* bergantung pada kebijakan *autoplay* browser — gunakan tombol "Initialize Audio Engine" untuk mengaktifkan audio.
+> - Tes otomatis masih terbatas; kontribusi sangat diterima.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## 🚀 Fitur Utama (Technical Features)
 
-## Agentic Development
+### 1. Manajemen Jadwal Bel (Schedule Management)
+- **FullCalendar Integration** — Antarmuka kalender interaktif dengan *drag-and-drop* untuk membuat, mengedit, dan menghapus jadwal.
+- **Recurring Schedules** — Jadwal berulang berdasarkan hari dalam seminggu (Senin—Jumat, dll).
+- **Real-time Sync** — Setiap perubahan jadwal langsung disiarkan ke seluruh *player node* melalui WebSocket.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### 2. Siaran Audio Real-Time (Real-time Broadcasting)
+- **Laravel Reverb** — WebSocket server *first-party* Laravel untuk komunikasi *real-time* antara panel admin dan *player nodes*.
+- **Scheduled Playback** — *Player node* otomatis memutar audio sesuai jadwal harian (pengecekan setiap 15 detik).
+- **Ad-hoc Announcement** — Admin dapat menyiarkan pengumuman dadakan secara instan ke seluruh perangkat pemutar.
 
+### 3. Manajemen Preset Audio (Audio Preset Management)
+- **Global Presets** (Superadmin) — Koleksi audio sistem seperti bel, jingle, dan chime yang dapat digunakan seluruh tenant.
+- **Tenant Presets** (Admin) — Template pengumuman bilingual (Indonesia & Inggris) dengan *placeholder* `{time}` dan `{title}`.
+
+### 4. Multi-Tenant & Role-Based Access (RBAC)
+- **Multi-Tenant Isolation** — Setiap sekolah adalah tenant terpisah dengan database sendiri.
+- **4 Role Levels** — Superadmin, Admin, Operator, dan Player dengan hak akses bertingkat.
+- **Player Authentication** — Autentikasi terpisah untuk perangkat pemutar audio (*player nodes*).
+
+### 5. Admin Panel Modern
+- **Filament 5** — Panel administrasi modern dan responsif.
+- **Dashboard Kalender** — Tampilan jadwal hari ini dengan indikator waktu sekarang (*now-indicator*).
+- **Instant Broadcast Page** — Halaman khusus untuk menyiarkan pengumuman langsung.
+
+## 🛠️ Teknologi yang Digunakan (Tech Stack)
+
+| Layer | Teknologi |
+|-------|-----------|
+| **Bahasa** | PHP 8.3 |
+| **Framework** | Laravel 13 |
+| **Admin Panel** | Filament 5 + FullCalendar |
+| **Real-time** | Laravel Reverb (WebSocket) |
+| **Database** | MySQL / MariaDB (multi-database per tenant) |
+| **Frontend** | Tailwind CSS 4, Vite 8 |
+| **WebSocket Client** | Laravel Echo + Pusher JS |
+| **Queue** | Database (Laravel Queue) |
+| **Testing** | Pest PHP |
+| **Tools** | Git, Composer, npm |
+
+## 📋 Cara Menjalankan (How to Run)
+
+### Prasyarat
+- PHP ≥ 8.3 dengan ekstensi: `bcmath`, `ctype`, `curl`, `dom`, `fileinfo`, `mbstring`, `openssl`, `pdo`, `pdo_mysql`, `tokenizer`, `xml`
+- MySQL / MariaDB
+- Composer & Node.js (≥ 18)
+- Git
+
+### Langkah 1: Clone & Install Dependencies
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone <repository-url>
+cd school-timekeeper
+composer setup
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Perintah `composer setup` otomatis menjalankan:
+- `composer install`
+- Menyalin `.env.example` → `.env`
+- `php artisan key:generate`
+- `php artisan migrate --force`
+- `npm install`
+- `npm run build`
 
-## Contributing
+### Langkah 2: Konfigurasi Environment
+Sesuaikan file `.env` sesuai environment kamu:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=school_timekeeper
+DB_USERNAME=root
+DB_PASSWORD=
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+BROADCAST_CONNECTION=reverb
 
-## Code of Conduct
+REVERB_APP_ID=...
+REVERB_APP_KEY=...
+REVERB_APP_SECRET=...
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Langkah 3: Seed Database
+```bash
+php artisan db:seed
+```
 
-## Security Vulnerabilities
+Akun default setelah seeding:
+| Role | Email | Password |
+|------|-------|----------|
+| Superadmin | `superadmin@app.com` | `password` |
+| Admin | `admin@smkn1lmj.sch.id` | `password` |
+| Operator | `operator@smkn1lmj.sch.id` | `password` |
+| Player | `player@smkn1lmj.sch.id` | `password` |
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Langkah 4: Menjalankan Aplikasi (Development)
+```bash
+composer dev
+```
 
-## License
+Perintah ini menjalankan 4 proses secara bersamaan:
+- **Server** — `php artisan serve` (http://localhost:8000)
+- **Queue** — `php artisan queue:listen` (pemrosesan job)
+- **Logs** — `php artisan pail` (log tailing)
+- **Vite** — `npm run dev` (hot module replacement)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Atau jalankan secara manual di terminal terpisah:
+```bash
+# Terminal 1: Laravel dev server
+php artisan serve
+
+# Terminal 2: Reverb WebSocket server
+php artisan reverb:start
+
+# Terminal 3: Queue worker
+php artisan queue:listen
+
+# Terminal 4: Vite dev server
+npm run dev
+```
+
+### Langkah 5: Akses Aplikasi
+| Halaman | URL | Keterangan |
+|---------|-----|------------|
+| Admin Panel | `http://localhost:8000/admin` | Panel administrasi (Filament) |
+| Player Login | `http://localhost:8000/source-login` | Login perangkat pemutar |
+| Player Display | `http://localhost:8000/source-display` | Dashboard pemutar audio |
+
+### Production Deployment
+Untuk production, jalankan:
+```bash
+npm run build
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+php artisan reverb:start --no-interaction &
+php artisan queue:work --daemon &
+```
+
