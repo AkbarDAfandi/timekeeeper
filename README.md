@@ -2,14 +2,16 @@
 
 **School-Timekeeper** adalah aplikasi *web-based* untuk mengelola jadwal bel sekolah, pengumuman otomatis, dan siaran audio *real-time* melalui *player nodes*. Proyek ini dikembangkan sebagai portofolio *Full-Stack Development* yang mendemonstrasikan implementasi arsitektur *multi-tenant*, *real-time broadcasting*, dan *role-based access control*.
 
-![Project Status](https://img.shields.io/badge/Status-In%20Development-yellow)
+![Project Status](https://img.shields.io/badge/Status-PoC%20%2F%20MVP-orange)
 ![Tech Stack](https://img.shields.io/badge/Backend-PHP%20%2F%20Laravel-red)
 ![Filament](https://img.shields.io/badge/Admin-Filament%205-purple)
 ![Real-time](https://img.shields.io/badge/Real--time-Laravel%20Reverb-blue)
 
 ## ⚠️ Disclaimer
 
-Proyek ini sedang dalam tahap **pengembangan aktif (In Development)**. Beberapa fitur mungkin belum sepenuhnya stabil atau masih dalam penyempurnaan.
+Proyek ini adalah **Proof of Concept (PoC)** dan **Base MVP** — dikembangkan untuk mendemonstrasikan arsitektur dan fitur inti. Beberapa fitur mungkin belum sepenuhnya stabil atau masih dalam penyempurnaan.
+
+> **Rencana Pengembangan:** Proyek ini direncanakan untuk dikembangkan lebih lanjut menjadi layanan **SaaS berbayar** dengan fitur lengkap, multi-tenant terkelola, dan dukungan production-grade.
 
 > **Catatan Pengembangan:**
 > - Fitur *multi-database tenant* sudah terimplementasi namun mungkin memerlukan penyesuaian untuk production.
